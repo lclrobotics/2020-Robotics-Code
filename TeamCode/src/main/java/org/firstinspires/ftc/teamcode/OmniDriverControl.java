@@ -61,9 +61,9 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Driver_Control", group="Iterative Opmode")
+@TeleOp(name="Omni_Driver_Control", group="Iterative Opmode")//Originally just DriverControl
 //@Disabled
-public class DriverControl extends OpMode
+public class OmniDriverControl extends OpMode
 {
     private ElapsedTime runtime = new ElapsedTime();
 
