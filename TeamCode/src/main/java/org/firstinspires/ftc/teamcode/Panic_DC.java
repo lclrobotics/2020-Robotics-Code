@@ -55,6 +55,8 @@ import com.qualcomm.robotcore.util.Range;
 //@Disabled
 public class BasicOpMode_Linear extends LinearOpMode {
 
+
+
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
@@ -81,7 +83,7 @@ public class BasicOpMode_Linear extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
 
-        double armPos = 0.0;
+        double armPos = 0;
 
         waitForStart();
         runtime.reset();
@@ -108,9 +110,10 @@ public class BasicOpMode_Linear extends LinearOpMode {
             // leftPower  = -gamepad1.left_stick_y ;
             // rightPower = -gamepad1.right_stick_y ;
 
-            if(gamepad1.left_bumper){armPos += 1;}
-            else if(gamepad1.right_bumper){armPos -= 1;}
-            armPos = Range.clip(armPos, 0, 2.0);//might need to verify if these are the actual limits
+            //125/30 = ~4, so dividing commented out values by 4
+            if(gamepad1.left_bumper){armPos = 0;}// 0.35
+            else if(gamepad1.right_bumper){armPos = 0.25;} //0.75
+            //armPos = Range.clip(armPos, 0, 2.0);//might need to verify if these are the actual limits
 
             // Send calculated power to wheels
             leftDrive.setPower(leftPower);
@@ -121,7 +124,8 @@ public class BasicOpMode_Linear extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            telemetry.addData("Arm Servo", "Pos: %f", wackyArm.getPosition());
+            telemetry.addData("Arm Pos", "Pos: %f", wackyArm.getPosition());
+            telemetry.addData("Arm Set", "Pos: %f", armPos);
             telemetry.update();
         }
     }
