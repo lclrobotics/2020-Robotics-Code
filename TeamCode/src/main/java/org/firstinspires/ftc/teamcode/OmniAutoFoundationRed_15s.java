@@ -15,9 +15,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Omni Auto Foundation Red", group="Exercises")
+@Autonomous(name="Omni Auto Foundation Red 15s", group="Exercises")
 //@Disabled
-public class OmniAutoFoundationRed extends LinearOpMode
+public class OmniAutoFoundationRed_15s extends LinearOpMode
 {
     public double z_angle;
 
@@ -30,6 +30,7 @@ public class OmniAutoFoundationRed extends LinearOpMode
     {
         robot.init(hardwareMap);
         waitForStart();
+        sleep(15000);
 
         robot.dragDriveRight.setPosition(robot.DDRI);
         robot.dragDriveLeft.setPosition(robot.DDLI);

@@ -14,14 +14,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-
-@Autonomous(name="Omni Auto 2", group="Exercises")
+@Autonomous(name="Omni Pixy Auto", group="Exercises")
 //@Disabled
-public class OmniAutonomousSimpleTape extends LinearOpMode
+public class OmniPixyAuto extends LinearOpMode
 {
     public double z_angle;
 
@@ -32,12 +29,30 @@ public class OmniAutonomousSimpleTape extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
+
         robot.init(hardwareMap);
         waitForStart();
 
-        robot.autoClaw.setPosition(0.07);
-        sleep(100);
 
+        //Code to look at pixy data: double volt = robot.pixyCam.getVoltage();
+        int i = 0;
+        double goal = robot.pixyCam.getMaxVoltage()/2;
+        double tolerance = .5;
+        while(i < 1){
+            //in theory goal would provide the value to go to aka the middle of the skystone
+            double volt = robot.pixyCam.getVoltage();
+
+            if(volt > (goal + tolerance)){ //go left
+                //Strafe left
+            } else if (volt < (goal - tolerance)) {
+                //Strafe right
+            }
+            else{
+                //Within accepted range; exit loop
+                i = 999;
+            }
+        }
+        //pickup block
         //turn(180);
 
         robot.frontrightDrive.setPower(0.5);

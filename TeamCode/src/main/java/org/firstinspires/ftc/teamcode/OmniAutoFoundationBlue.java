@@ -15,9 +15,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Omni Auto Foundation", group="Exercises")
+@Autonomous(name="Omni Auto Foundation Blue", group="Exercises")
 //@Disabled
-public class OmniAutoFoundationRed extends LinearOpMode
+public class OmniAutoFoundationBlue extends LinearOpMode
 {
     public double z_angle;
 
@@ -34,10 +34,10 @@ public class OmniAutoFoundationRed extends LinearOpMode
         robot.dragDriveRight.setPosition(robot.DDRI);
         robot.dragDriveLeft.setPosition(robot.DDLI);
 
-        robot.frontrightDrive.setPower(-0.25);
-        robot.backrightDrive.setPower(0.25);
-        robot.frontleftDrive.setPower(-0.25);
-        robot.backleftDrive.setPower(0.25);
+        robot.frontrightDrive.setPower(0.25);
+        robot.backrightDrive.setPower(-0.25);
+        robot.frontleftDrive.setPower(0.25);
+        robot.backleftDrive.setPower(-0.25);
 
         sleep(1500);
 
@@ -85,10 +85,10 @@ public class OmniAutoFoundationRed extends LinearOpMode
         sleep(1000);
 
         //Strafe to under bridge:
-        robot.frontrightDrive.setPower(0.5);
-        robot.backrightDrive.setPower(-0.5);
-        robot.frontleftDrive.setPower(0.5);
-        robot.backleftDrive.setPower(-0.5);
+        robot.frontrightDrive.setPower(-0.5);
+        robot.backrightDrive.setPower(0.5);
+        robot.frontleftDrive.setPower(-0.5);
+        robot.backleftDrive.setPower(0.5);
 
         sleep(2200);//500 at 0.5 power gives a bit less than one tile, so 22.75" minus 2" or 3"
 

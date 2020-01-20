@@ -12,19 +12,16 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Omni Drive Autonomous", group="Exercises")
+@Autonomous(name="Omni Auto Simple", group="Exercises")
 //@Disabled
-public class OmniAutonomous extends LinearOpMode
+public class OmniAutonomousSimpleTape extends LinearOpMode
 {
     public double z_angle;
 
@@ -38,14 +35,17 @@ public class OmniAutonomous extends LinearOpMode
         robot.init(hardwareMap);
         waitForStart();
 
+        robot.autoClaw.setPosition(0.07);
+        sleep(100);
+
         //turn(180);
 
-        robot.frontrightDrive.setPower(0.5);
-        robot.backrightDrive.setPower(0.5);
-        robot.frontleftDrive.setPower(-0.5);
-        robot.backleftDrive.setPower(-0.5);
+        robot.frontrightDrive.setPower(-0.5);
+        robot.backrightDrive.setPower(-0.5);
+        robot.frontleftDrive.setPower(0.5);
+        robot.backleftDrive.setPower(0.5);
 
-        sleep(500);//a bit less than one tile, so 22.75" minus 2" or 3"
+        sleep(500);//500 at 0.5 power gives a bit less than one tile, so 22.75" minus 2" or 3"
 
 
         // turn the motors off.
@@ -55,30 +55,5 @@ public class OmniAutonomous extends LinearOpMode
         //leftMotor.setPower(0);
         robot.frontleftDrive.setPower(0);
         robot.backleftDrive.setPower(0);
-    }
-
-    public void turn(int degrees) {
-        double z_angle = 0;
-        while ((int)(z_angle) != degrees){
-            z_angle = (robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle +
-                    robot.imu2.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle) / 2;
-
-            if(z_angle < degrees) {
-                robot.frontrightDrive.setPower(-0.5);
-                robot.backrightDrive.setPower(-0.5);
-                robot.frontleftDrive.setPower(0.5);
-                robot.backleftDrive.setPower(0.5);
-            } else {
-                robot.frontrightDrive.setPower(0.5);
-                robot.backrightDrive.setPower(0.5);
-                robot.frontleftDrive.setPower(-0.5);
-                robot.backleftDrive.setPower(-0.5);
-            }
-        }
-        robot.frontrightDrive.setPower(0);
-        robot.backrightDrive.setPower(0);
-        robot.frontleftDrive.setPower(0);
-        robot.backleftDrive.setPower(0);
-
     }
 }

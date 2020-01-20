@@ -23,15 +23,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Drive Avoid PID", group="Exercises")
+@Autonomous(name="Drive Avoid PID Auto CF", group="Exercises")
 //@Disabled
-public class DriveAvoidPid extends LinearOpMode
+public class DriveAvoidPid_AutoCF extends LinearOpMode
 {
     DcMotor                 leftMotor, rightMotor;
     TouchSensor             touch;
     BNO055IMU               imu;
     Orientation             lastAngles = new Orientation();
-    double                  globalAngle, power = .30, correction, rotation;
+    double                  globalAngle, power = .60, correction, rotation;
     boolean                 aButton, bButton, touched;
     PIDController           pidRotate, pidDrive;
 
@@ -42,13 +42,7 @@ public class DriveAvoidPid extends LinearOpMode
         leftMotor = hardwareMap.dcMotor.get("left_motor");
         rightMotor = hardwareMap.dcMotor.get("right_motor");
 
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-        rightMotor.setDirection(DcMotor.Direction.REVERSE);//leftMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -70,13 +64,13 @@ public class DriveAvoidPid extends LinearOpMode
 
         imu.initialize(parameters);
 
-        // Set PID proportional value to start reducing power at about 50 degrees of rotation.
-        // P by itself may stall before turn completed so we add a bit of I (integral) which
-        // causes the PID controller to gently increase power if the turn is not completed.
-        pidRotate = new PIDController(.003, .00003, 0);
+        // We will set rotate pid values in the rotate() function depending on the degree of
+        // rotation.
+        pidRotate = new PIDController(0,0,0);
 
         // Set PID proportional value to produce non-zero correction value when robot veers off
-        // straight line. P value controls how sensitive the correction is.
+        // straight line. P value controls how sensitive the correction is. This is 5% power adjust
+        // per degree of error.
         pidDrive = new PIDController(.05, 0, 0);
 
         telemetry.addData("Mode", "calibrating...");
@@ -119,8 +113,7 @@ public class DriveAvoidPid extends LinearOpMode
             telemetry.addData("2 global heading", globalAngle);
             telemetry.addData("3 correction", correction);
             telemetry.addData("4 turn rotation", rotation);
-            telemetry.addData("5 button", touch.isPressed());
-            //telemetry.update();
+            telemetry.update();
 
             // set power levels.
             leftMotor.setPower(power - correction);
@@ -147,16 +140,11 @@ public class DriveAvoidPid extends LinearOpMode
                 rightMotor.setPower(0);
 
                 // turn 90 degrees right.
-                if (touched || aButton) rotate(-180, power);//90
+                if (touched || aButton) rotate(-90, power);
 
                 // turn 90 degrees left.
-                if (bButton) rotate(180, power);//90
+                if (bButton) rotate(90, power);
             }
-
-
-            telemetry.addData("Right Encoder:", rightMotor.getCurrentPosition());
-            telemetry.addData("Left Encoder:", leftMotor.getCurrentPosition());
-            telemetry.update();
         }
 
         // turn the motors off.
@@ -210,23 +198,26 @@ public class DriveAvoidPid extends LinearOpMode
         // restart imu angle tracking.
         resetAngle();
 
-        // if degrees > 359 we cap at 359 with same sign as original degrees.
+        // If input degrees > 359, we cap at 359 with same sign as input.
         if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
 
         // start pid controller. PID controller will monitor the turn angle with respect to the
-        // target angle and reduce power as we approach the target angle. This is to prevent the
-        // robots momentum from overshooting the turn after we turn off the power. The PID controller
-        // reports onTarget() = true when the difference between turn angle and target angle is within
-        // 1% of target (tolerance) which is about 1 degree. This helps prevent overshoot. Overshoot is
-        // dependant on the motor and gearing configuration, starting power, weight of the robot and the
-        // on target tolerance. If the controller overshoots, it will reverse the sign of the output 
-        // turning the robot back toward the setpoint value.
+        // target angle and reduce power as we approach the target angle. We compute the p and I
+        // values based on the input degrees and starting power level. We compute the tolerance %
+        // to yield a tolerance value of about 1 degree.
+        // Overshoot is dependant on the motor and gearing configuration, starting power, weight
+        // of the robot and the on target tolerance.
 
         pidRotate.reset();
+
+        double p = Math.abs(power/degrees);
+        double i = p / 100.0;
+        pidRotate.setPID(p, i, 0);
+
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0, power);
-        pidRotate.setTolerance(1);
+        pidRotate.setTolerance(1.0 / Math.abs(degrees) * 100.0);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating

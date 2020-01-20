@@ -29,8 +29,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -60,10 +64,47 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 public class OmniHardwarePushbot
 {
     /* Public OpMode members. */
+    public BNO055IMU       imu;
+    public BNO055IMU       imu2;
+
     public DcMotor  frontleftDrive      = null;
     public DcMotor  frontrightDrive     = null;
     public DcMotor  backrightDrive      = null;
     public DcMotor  backleftDrive       = null;
+
+    public DcMotor  rightIntake         = null;
+    public DcMotor  leftIntake         = null;
+
+    public DcMotor  lift                = null;
+
+    public Servo    autoClaw            = null;
+    public Servo    autoClawArm         = null ;
+
+    public int      clawToggle          = 0;
+    public int      clawToggleArm       = 0;
+    public int      dragToggle          = 0;
+    public int      speedFactor         = 1;
+
+    public Servo    dragDriveRight      = null;
+    public Servo    dragDriveLeft       = null;
+
+    public CRServo    delivRack           = null;
+    public Servo    delivClaw           = null;
+    public AnalogInput pixyCam          = null;
+
+    public double      autoClawIdle        = .5;
+    public double      autoClawGrab        = .18;
+
+    public double      autoArmIdle         = .45;
+    public double      autoArmDown         = .90; //.83
+
+    public double      DDRD                = .69;
+    public double      DDLD                = .59;
+    public double      DDRI                =   1;
+    public double      DDLI                = .83;
+
+    public double     delivIdle            = .10;
+    public double     delivGrab            = .30;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -79,21 +120,64 @@ public class OmniHardwarePushbot
         // Save reference to Hardware map
         hwMap = ahwMap;
 
+
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
+
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu2 = hwMap.get(BNO055IMU.class, "imu2");
+        imu.initialize(parameters);
+        imu2.initialize(parameters);
+
+        while(!imu.isGyroCalibrated() && !imu2.isGyroCalibrated()){
+            //I don't know how necessary this is, decided to include it
+        }
+
         // Define and Initialize Motors
         frontleftDrive        = hwMap.get(DcMotor.class, "front_left_drive");
         frontrightDrive       = hwMap.get(DcMotor.class, "front_right_drive");
         backleftDrive         = hwMap.get(DcMotor.class, "back_left_drive");
         backrightDrive        = hwMap.get(DcMotor.class, "back_right_drive");
 
+        lift                  = hwMap.get(DcMotor.class, "lift");
+        pixyCam               = hwMap.get(AnalogInput.class, "pixy");
+
+        rightIntake           = hwMap.get(DcMotor.class, "right_intake");
+        leftIntake            = hwMap.get(DcMotor.class, "left_intake");
+
+        autoClaw              = hwMap.get(Servo.class, "auto_claw");
+        autoClawArm           = hwMap.get(Servo.class, "auto_claw_arm");
+
+        dragDriveRight           = hwMap.get(Servo.class, "right_drag");
+        dragDriveLeft            = hwMap.get(Servo.class, "left_drag");
+
+        delivRack             = hwMap.get(CRServo.class, "deliv_rack");
+        delivClaw             = hwMap.get(Servo.class, "deliv_claw");
+
         frontleftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         frontrightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         backleftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         backrightDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+
+        lift.setDirection(DcMotor.Direction.FORWARD);
+
+        rightIntake.setDirection(DcMotor.Direction.FORWARD);
+        leftIntake.setDirection(DcMotor.Direction.REVERSE);
         // Set all motors to zero power
         frontleftDrive.setPower(0);
         frontrightDrive.setPower(0);
         backleftDrive.setPower(0);
         backrightDrive.setPower(0);
+
+        lift.setPower(0);
+
+        rightIntake.setPower(0);
+        leftIntake.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -101,6 +185,11 @@ public class OmniHardwarePushbot
         frontrightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backleftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backrightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
 
