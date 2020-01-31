@@ -30,11 +30,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -65,7 +68,12 @@ public class OmniHardwarePushbot
 {
     /* Public OpMode members. */
     public BNO055IMU       imu;
-    public BNO055IMU       imu2;
+
+    public ColorSensor colorSensor;
+    public DistanceSensor distanceSensor_color;
+    public DistanceSensor distanceSensor;
+    public DistanceSensor distanceSensor_2;
+    //public BNO055IMU       imu2;
 
     public DcMotor  frontleftDrive      = null;
     public DcMotor  frontrightDrive     = null;
@@ -93,10 +101,10 @@ public class OmniHardwarePushbot
     public AnalogInput pixyCam          = null;
 
     public double      autoClawIdle        = .5;
-    public double      autoClawGrab        = .18;
+    public double      autoClawGrab        = .89;
 
-    public double      autoArmIdle         = .45;
-    public double      autoArmDown         = .90; //.83
+    public double      autoArmIdle         = .39;
+    public double      autoArmDown         = .82; //.83
 
     public double      DDRD                = .69;
     public double      DDLD                = .59;
@@ -106,6 +114,10 @@ public class OmniHardwarePushbot
     public double     delivIdle            = .10;
     public double     delivGrab            = .30;
 
+    public double     turnFactorPID        = .5;
+
+    public double     tolerancePID         = 2;
+    public double     tolerancePID_d       = 1;
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
@@ -130,15 +142,21 @@ public class OmniHardwarePushbot
         parameters.loggingEnabled      = false;
 
         imu = hwMap.get(BNO055IMU.class, "imu");
-        imu2 = hwMap.get(BNO055IMU.class, "imu2");
+        //imu2 = hwMap.get(BNO055IMU.class, "imu2");
         imu.initialize(parameters);
-        imu2.initialize(parameters);
 
+
+        //imu2.initialize(parameters);
+/*
         while(!imu.isGyroCalibrated() && !imu2.isGyroCalibrated()){
             //I don't know how necessary this is, decided to include it
         }
-
+*/
         // Define and Initialize Motors
+        colorSensor = hwMap.get(ColorSensor.class, "color_sensor");
+        distanceSensor_color = hwMap.get(DistanceSensor.class, "color_sensor");
+        distanceSensor = hwMap.get(DistanceSensor.class, "distance_sensor");
+        distanceSensor_2 = hwMap.get(DistanceSensor.class, "distance_sensor_front");
         frontleftDrive        = hwMap.get(DcMotor.class, "front_left_drive");
         frontrightDrive       = hwMap.get(DcMotor.class, "front_right_drive");
         backleftDrive         = hwMap.get(DcMotor.class, "back_left_drive");

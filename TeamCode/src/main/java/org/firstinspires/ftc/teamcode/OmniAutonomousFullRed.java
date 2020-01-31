@@ -15,14 +15,13 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Omni Auto Full Red", group="Exercises")
+@Autonomous(name="Omni Auto Full Red", group="Full")
 //@Disabled
 public class OmniAutonomousFullRed extends LinearOpMode
 {
     public double z_angle;
 
     OmniHardwarePushbot robot = new OmniHardwarePushbot();
-
     public void drive(double power, int angle, int time){ // Time is in seconds; Direction is non field oriented
         double rad = Math.toRadians(angle);
         double y = -Math.cos(rad);

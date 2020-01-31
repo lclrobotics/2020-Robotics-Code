@@ -41,6 +41,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  */
 
 @Autonomous(name="Autonomous", group="Pushbot")
+@Disabled
 public class PushbotAutoDriveByTime_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -52,6 +53,7 @@ public class PushbotAutoDriveByTime_Linear extends LinearOpMode {
     static final double     TURN_SPEED    = 0.5;
 
     @Override
+
     public void runOpMode() {
 
         /*

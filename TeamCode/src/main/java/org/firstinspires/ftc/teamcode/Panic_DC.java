@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="Panic Driver Control", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class Panic_DC extends LinearOpMode {
 
 

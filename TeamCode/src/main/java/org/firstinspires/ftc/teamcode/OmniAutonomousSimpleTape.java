@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
-@Autonomous(name="Omni Auto Simple", group="Exercises")
+@Autonomous(name="Omni Auto Simple", group="Simple")
 //@Disabled
 public class OmniAutonomousSimpleTape extends LinearOpMode
 {

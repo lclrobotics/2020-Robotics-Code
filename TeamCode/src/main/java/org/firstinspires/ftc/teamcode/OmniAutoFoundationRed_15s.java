@@ -15,7 +15,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Omni Auto Foundation Red 15s", group="Exercises")
+@Autonomous(name="Foundation Red 15s", group="Foundation")
 //@Disabled
 public class OmniAutoFoundationRed_15s extends LinearOpMode
 {
@@ -86,10 +86,10 @@ public class OmniAutoFoundationRed_15s extends LinearOpMode
         sleep(1000);
 
         //Strafe to under bridge:
-        robot.frontrightDrive.setPower(0.5);
-        robot.backrightDrive.setPower(-0.5);
-        robot.frontleftDrive.setPower(0.5);
-        robot.backleftDrive.setPower(-0.5);
+        robot.frontrightDrive.setPower(-0.5);
+        robot.backrightDrive.setPower(0.5);
+        robot.frontleftDrive.setPower(-0.5);
+        robot.backleftDrive.setPower(0.5);
 
         sleep(2200);//500 at 0.5 power gives a bit less than one tile, so 22.75" minus 2" or 3"
 

@@ -15,7 +15,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Omni Auto Foundation Red", group="Exercises")
+@Autonomous(name="Foundation Red", group="Foundation")
 //@Disabled
 public class OmniAutoFoundationRed extends LinearOpMode
 {

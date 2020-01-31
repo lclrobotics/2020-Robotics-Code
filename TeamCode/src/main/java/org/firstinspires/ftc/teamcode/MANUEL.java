@@ -57,6 +57,7 @@ import org.firstinspires.ftc.teamcode.HardwarePushbot;
  */
 
 @TeleOp(name="MANUEL", group="Pushbot")
+@Disabled
 public class MANUEL extends OpMode{
 
     /* Declare OpMode members. */

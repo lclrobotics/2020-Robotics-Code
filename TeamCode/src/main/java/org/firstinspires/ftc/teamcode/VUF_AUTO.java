@@ -97,6 +97,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 @TeleOp(name="Concept: VUF_AUTO", group ="Concept")
+@Disabled
 public class VUF_AUTO extends LinearOpMode {
 
     //imported bulk of TF code, need to change into a function that returns det of X, Y, Z compared to ball

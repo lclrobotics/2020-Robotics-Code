@@ -158,6 +158,7 @@ public class OmniDriverControl extends OpMode
         telemetry.addData("Base Plate" , robot.DDRI != robot.dragDriveRight.getPosition());
         telemetry.addData("Delivery" , robot.delivIdle != robot.delivClaw.getPosition());
         telemetry.addData("Orientation", z_angle);
+        telemetry.addData("Color Sensor ARBG", robot.colorSensor.argb());
         telemetry.update();
     }
     /*

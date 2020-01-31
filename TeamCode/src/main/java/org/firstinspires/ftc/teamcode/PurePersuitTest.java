@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -142,7 +143,7 @@ class VectorMath {
 }
 
 @Autonomous(name="Pure Persuit", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class PurePersuitTest extends LinearOpMode{
     //To Do:
     //  -Skipped parts 2-Acceleration Limiter and 3-Calculations in velocities for now
