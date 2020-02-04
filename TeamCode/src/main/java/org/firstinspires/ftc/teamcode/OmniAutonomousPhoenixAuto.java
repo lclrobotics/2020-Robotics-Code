@@ -12,26 +12,21 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor.*;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.internal.android.dx.io.instructions.OneRegisterDecodedInstruction;
-import org.firstinspires.ftc.teamcode.MathFunctions.*;
-import org.firstinspires.ftc.teamcode.OmniHardwarePushbot.*;
-import org.firstinspires.ftc.teamcode.MiniPID.*;
-import android.graphics.Color;
 
 
-@Autonomous(name="Actually Competent Auto", group="PID")
+@Autonomous(name="Phoenix Auto", group="PID")
 //@Disabled
-public class OmniAutonomousSimplePID_mike extends LinearOpMode {
+public class OmniAutonomousPhoenixAuto extends LinearOpMode {
 
     public double z_angle;
     public double globalAngle;
@@ -186,54 +181,6 @@ public class OmniAutonomousSimplePID_mike extends LinearOpMode {
         }
     }
 
-    public void drivePathPID(double power, double goal) {//-180 to 180
-        double starTime = System.currentTimeMillis();
-        controllerDrive.setOutputLimits(-1,1);
-        while (true) {
-            double correctionZ = controllerAngle.getOutput(getAngle(), 0);
-            double correction = controllerDrive.getOutput(getDistance(4), goal);
-            telemetry.update();
-            double y = -1 * power;
-            double x = correction;
-            double z = correctionZ;
-            robot.frontleftDrive.setPower(y + x + z);
-            robot.frontrightDrive.setPower(-y + x + z);
-            robot.backleftDrive.setPower(y - x + z);
-            robot.backrightDrive.setPower(-y - x + z);
-            if(getDistance(4) <= goal) {
-                stopDrive();
-                break;
-            }
-            if(isStopRequested() == true){
-                stopDrive();
-                stop();
-                break;
-            }
-        }
-
-        while (true) {
-            double correctionZ = controllerAngle.getOutput(getAngle(), 0);
-            double correction = controllerDrive.getOutput(getDistance(1), goal);
-            telemetry.update();
-            double y = -1 * power;
-            double x = correction;
-            double z = correctionZ;
-            robot.frontleftDrive.setPower(y + x + z);
-            robot.frontrightDrive.setPower(-y + x + z);
-            robot.backleftDrive.setPower(y - x + z);
-            robot.backrightDrive.setPower(-y - x + z);
-            if(getDistance(1) <= goal) {
-                stopDrive();
-                break;
-            }
-            if(isStopRequested() == true){
-                stopDrive();
-                stop();
-                break;
-            }
-        }
-    }
-
     public void strafePID(double power, double goalAngle, int direction, double goal) {//-180 to 180
         double starTime = System.currentTimeMillis();
         controllerDrive.setOutputLimits(-1,1);
@@ -353,69 +300,36 @@ public class OmniAutonomousSimplePID_mike extends LinearOpMode {
         robot.init(hardwareMap);
         robot.autoClawArm.setPosition(robot.autoArmIdle);
         robot.autoClaw.setPosition(robot.autoClawIdle);
-        robot.dragDriveLeft.setPosition(robot.DDRI);
-        robot.dragDriveLeft.setPosition(robot.DDLI);
         waitForStart();
         setAngle();
         //Code above here should never change
             while(isStopRequested() == false) {
-                int i = 0;
+
+            /*
+            strafeLeft(1, 700);
+            turnToAnglePID(0);
+            grabBlock();
+            strafeRight(.5,350);
+            drivePIDBack(1,0,-1, 1200);
+            strafeLeft(.5, 350);
+            dropBlock();
+            stopDrive();
+            break;
+            */
+
+                strafeLeft(.5, 250);
+                drivePIDtime(.5, 0, 1, 2000, 2);
+                stopDrive();
+                sleep(500);
+                robot.autoClaw.setPosition(robot.autoClawIdle);
+                sleep(500);
                 robot.autoClawArm.setPosition(robot.autoArmDown);
-
-
-                while (i<=2){
-
-                    strafePID(.5, 0, -1, 35);
-                    robot.autoClaw.setPosition(robot.autoClawGrab);
-                    sleep(500);
-                    robot.autoClawArm.setPosition(robot.autoArmIdle);
-                    strafeRight(1, 300);
-                    drivePIDtime(1, 0, -1, 1000, 1);
-                    drivePID(.5, 0, -1, 85-(i*20), 1);
-                    sleep(500);
-                    strafePID(.4, 0, -1, 50);
-                    robot.autoClawArm.setPosition(robot.autoArmDeliver);
-                    robot.autoClaw.setPosition(robot.autoClawIdle);
-                    strafeRight(1, 300);
-                    drivePIDtime(1, 0, 1, 1750, 1);
-                    drivePID(.5, 0, 1, 65, 2);
-                    drivePIDtime(.5,0,-1,350+(i*225), 1);
-                    robot.autoClawArm.setPosition(robot.autoArmDown);
-                    i = i+1;
-
-                }
-
-                strafePID(.5, 0, -1, 35);
+                sleep(500);
+                strafePID(.5, 0, -1, 25);
                 robot.autoClaw.setPosition(robot.autoClawGrab);
                 sleep(500);
                 robot.autoClawArm.setPosition(robot.autoArmIdle);
-                strafeRight(1, 300);
-                drivePIDtime(1, 0, -1, 1000, 1);
-                drivePID(.5, 0, -1, 85-(i*20), 1);
-                sleep(500);
-                strafePID(.4, 0, -1, 50);
-                robot.autoClawArm.setPosition(robot.autoArmDeliver);
-                robot.autoClaw.setPosition(robot.autoClawIdle);
-                strafeRight(1, 350);
-
-                turnToAnglePID(90);
-                drivePIDtime(.25, 90, -1, 1500, 1);
-                robot.dragDriveLeft.setPosition(robot.DDRD);
-                sleep(500);
-                robot.dragDriveLeft.setPosition(robot.DDLD);
-                sleep(500);
-                drivePIDtime( .35, 90, 1, 2250, 1);
-
-                stopDrive();
-
-                //Release build plate
-                robot.dragDriveRight.setPosition(robot.DDRI);
-                sleep(500);
-                robot.dragDriveLeft.setPosition(robot.DDLI);
-                sleep(500);
-
-                drivePIDtime(.5, 90, -1, 250, 0);
-                strafeLeft(1, 1250);
+                strafeRight(.5, 500);
 
                 // Dont put code below here
                 stopDrive();

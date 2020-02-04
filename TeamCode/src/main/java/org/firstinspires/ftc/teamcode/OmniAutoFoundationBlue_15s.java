@@ -15,10 +15,88 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Foundation Blue 15s", group="Foundation")
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+
+@Autonomous(name="Foundation blue 15s", group="Foundation")
 //@Disabled
 public class OmniAutoFoundationBlue_15s extends LinearOpMode
 {
+    MiniPID controllerAngle = new MiniPID(0.035, 0, 0.03); //.025
+    MiniPID controllerDrive = new MiniPID(0.035, 0, 0); //.025
+    double globalAngle;
+
+
+    public void stopDrive(){
+        robot.frontleftDrive.setPower(0);
+        robot.frontrightDrive.setPower(0);
+        robot.backleftDrive.setPower(0);
+        robot.backrightDrive.setPower(0);
+    }
+
+    //Past working values .035, 0, .03
+
+    //Ziegler-Nichols standard for starting PID tuning values
+    //Kcr = Proportional gain that causes steady osscillation (.04)
+    //Pcr = Period of Kcr's Oscillation (measured in seconds) (1.4s) T
+    //In a full PID system:
+    //Proportional: .8Kcr
+    //Derivative: (Ku*Tu)/10
+
+    // called when init button is  pressed.
+
+    /**
+     * Get current cumulative angle rotation from last reset.
+     * @return Angle in degrees. + = left, - = right from zero point.
+     */
+
+    public void setAngle(){
+        Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double deltaAngle = angles.firstAngle;
+        globalAngle = deltaAngle;
+    }
+
+    public double getAngle() {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle;
+
+        return -MathFunctions.AngleWrap(deltaAngle - globalAngle);
+    }
+
+    public void drivePIDtime(double power, double goalAngle, int direction, double time) {//-180 to 180
+        double starTime = System.currentTimeMillis();
+        controllerDrive.setOutputLimits(-1,1);
+        while (true) {
+            double correction = controllerDrive.getOutput(getAngle(), goalAngle);
+            double y = -direction * power;
+            double x = 0;
+            double z = correction;
+            robot.frontleftDrive.setPower(y + x + z);
+            robot.frontrightDrive.setPower(-y + x + z);
+            robot.backleftDrive.setPower(y - x + z);
+            robot.backrightDrive.setPower(-y - x + z);
+            if(System.currentTimeMillis()-starTime >= time) {
+                stopDrive();
+                break;
+            }
+            if(isStopRequested() == true){
+                stopDrive();
+                stop();
+                break;
+            }
+        }
+    }
+
     public double z_angle;
 
     OmniHardwarePushbot robot = new OmniHardwarePushbot();
@@ -28,11 +106,15 @@ public class OmniAutoFoundationBlue_15s extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
+
         robot.init(hardwareMap);
         waitForStart();
-        sleep(15000);
+        sleep(10000);
+        setAngle();
+
         robot.dragDriveRight.setPosition(robot.DDRI);
         robot.dragDriveLeft.setPosition(robot.DDLI);
+
 
         robot.frontrightDrive.setPower(0.25);
         robot.backrightDrive.setPower(-0.25);
@@ -40,18 +122,11 @@ public class OmniAutoFoundationBlue_15s extends LinearOpMode
         robot.backleftDrive.setPower(-0.25);
 
         sleep(1500);
-
-        robot.autoClaw.setPosition(0.07);
-        sleep(100);
         //Start backwards
         //Goes backwards:
 
-        robot.frontrightDrive.setPower(-0.5);
-        robot.backrightDrive.setPower(-0.5);
-        robot.frontleftDrive.setPower(0.5);
-        robot.backleftDrive.setPower(0.5);
+        drivePIDtime( .25, 0, -1, 2200);
 
-        sleep(1000);//500 at 0.5 power gives a bit less than one tile, so 22.75" minus 2" or 3"
         //Move 2+ tiles
         robot.frontrightDrive.setPower(0);
         robot.backrightDrive.setPower(0);
@@ -59,18 +134,14 @@ public class OmniAutoFoundationBlue_15s extends LinearOpMode
         robot.frontleftDrive.setPower(0);
         robot.backleftDrive.setPower(0);
         //Grab the Build plate
+
+        sleep(750);
         robot.dragDriveRight.setPosition(robot.DDRD);
         robot.dragDriveLeft.setPosition(robot.DDLD);
 
         sleep(2000);
         //Go forwards (backwards)
-        robot.frontrightDrive.setPower(0.5);
-        robot.backrightDrive.setPower(0.5);
-        robot.frontleftDrive.setPower(-0.5);
-        robot.backleftDrive.setPower(-0.5);
-
-        sleep(2000);//500 at 0.5 power gives a bit less than one tile, so 22.75" minus 2" or 3"
-
+        drivePIDtime( .35, 0, 1, 2250);
 
         robot.frontrightDrive.setPower(0);
         robot.backrightDrive.setPower(0);
@@ -90,7 +161,7 @@ public class OmniAutoFoundationBlue_15s extends LinearOpMode
         robot.frontleftDrive.setPower(-0.5);
         robot.backleftDrive.setPower(0.5);
 
-        sleep(2200);//500 at 0.5 power gives a bit less than one tile, so 22.75" minus 2" or 3"
+        sleep(2500);//500 at 0.5 power gives a bit less than one tile, so 22.75" minus 2" or 3"
 
 
         // turn the motors off.

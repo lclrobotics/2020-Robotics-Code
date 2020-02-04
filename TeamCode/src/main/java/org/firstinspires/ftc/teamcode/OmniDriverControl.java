@@ -60,10 +60,10 @@ public class OmniDriverControl extends OpMode
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
-    public boolean changed1 = false;
-    public boolean changed2 = false;
-    public boolean changed3 = false;
-    public boolean changed4 = false;
+    public boolean changed1, on1 = false;
+    public boolean changed2, on2 = false;
+    public boolean changed3, on3 = false;
+    public boolean changed4, on4 = false;
 
 
     @Override
@@ -120,22 +120,36 @@ public class OmniDriverControl extends OpMode
         if(gamepad2.x && !changed1) {
             robot.autoClaw.setPosition(robot.autoClawIdle != robot.autoClaw.getPosition() ? robot.autoClawIdle : robot.autoClawGrab);
             changed1 = true;
+            //on1 = !on1;
         } else if(!gamepad2.x) changed1 = false;
 
         if(gamepad2.a && !changed2) {
             robot.autoClawArm.setPosition(robot.autoArmIdle != robot.autoClawArm.getPosition() ? robot.autoArmIdle : robot.autoArmDown);
             changed2 = true;
+            //on2 = !on2;
         } else if(!gamepad2.a) changed2 = false;
 
+        robot.dragDriveRight.setPosition(gamepad2.y ? robot.DDRD : robot.DDRI);
+        robot.dragDriveLeft.setPosition(gamepad2.y ? robot.DDLD : robot.DDLI);
+        /*
         if(gamepad2.y && !changed3) {
             robot.dragDriveRight.setPosition(robot.DDRI != robot.dragDriveRight.getPosition() ? robot.DDRI : robot.DDRD);
             robot.dragDriveLeft.setPosition( robot.DDLI != robot.dragDriveLeft.getPosition() ? robot.DDLI : robot.DDLD);
+            long timeStop = System.currentTimeMillis();
+            while(true){
+                if((System.currentTimeMillis() - timeStop ) >= 250){
+                    break;
+                }
+            }
             changed3 = true;
+            on3 = !on3;
         } else if(!gamepad2.y) changed3 = false;
+        */
 
         if(gamepad2.b && !changed4) {
             robot.delivClaw.setPosition(robot.delivIdle != robot.delivClaw.getPosition() ? robot.delivIdle : robot.delivGrab);
             changed4 = true;
+            //on4 = !on4;
         } else if(!gamepad2.b) changed4 = false;
 
         if (gamepad2.right_bumper) {
